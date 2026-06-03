@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockControl – Notas Fiscais</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ======= SIDEBAR ======= -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="index.html">
+    <div class="sidebar-brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+    <div class="sidebar-brand-text">
+      <span class="sidebar-brand-name">StockControl</span>
+      <span class="sidebar-brand-sub">Web System</span>
+    </div>
+  </a>
+  <div class="sidebar-section">Menu</div>
+  <nav>
+    <a class="nav-item" href="index.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+    <a class="nav-item" href="produtos.html"><i class="bi bi-box2-fill"></i><span>Produtos</span></a>
+    <a class="nav-item active" href="notas.html"><i class="bi bi-receipt-cutoff"></i><span>Notas Fiscais</span></a>
+    <a class="nav-item" href="movimentacoes.html"><i class="bi bi-arrow-left-right"></i><span>Movimentações</span></a>
+  </nav>
+  <div class="sidebar-footer">StockControl v1.0 &copy; 2025</div>
+</aside>
+
+<!-- ======= MAIN ======= -->
+<div class="main-content">
+
+  <header class="topbar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+    <span class="topbar-title"><i class="bi bi-receipt-cutoff me-2 text-primary"></i>Notas Fiscais</span>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbarDate"></span>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <!-- Aviso informativo -->
+    <div class="alert alert-info d-flex align-items-center gap-2 fade-in mb-4" style="border-radius:var(--radius);border:none;background:var(--info-light);color:#0c7ea6">
+      <i class="bi bi-info-circle-fill fs-5"></i>
+      <span><strong>Atualização automática:</strong> ao salvar uma Nota Fiscal, o estoque de cada produto é atualizado automaticamente e uma movimentação de entrada é registrada.</span>
+    </div>
+
+    <div class="page-header fade-in-d1">
+      <div class="page-header-left">
+        <h2>Notas Fiscais de Entrada</h2>
+        <p>Registre o recebimento de mercadorias</p>
+      </div>
+      <button class="btn btn-primary" onclick="abrirNovaNF()">
+        <i class="bi bi-plus-lg"></i>Nova Nota Fiscal
+      </button>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card-panel fade-in-d2">
+      <div class="card-panel-body">
+        <table class="table" id="tblNotas">
+          <thead>
+            <tr>
+              <th>Nº da NF</th>
+              <th>Fornecedor</th>
+              <th>Data Emissão</th>
+              <th>Valor Total</th>
+              <th>Cadastrado em</th>
+              <th style="width:90px">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="6" class="text-center py-4 text-muted">
+              <div class="spinner-border spinner-border-sm me-2"></div>Carregando…
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ======= MODAL: NOVA NF ======= -->
+<div class="modal fade" id="modalNF" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-receipt-cutoff me-2"></i>Nova Nota Fiscal de Entrada</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="frmNF" onsubmit="return false">
+
+          <!-- Dados da NF -->
+          <div class="row g-3 mb-4">
+            <div class="col-12">
+              <h6 style="font-family:var(--font-head);font-weight:700;color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">
+                <i class="bi bi-file-earmark-text me-1"></i>Dados da Nota
+              </h6>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Número da NF *</label>
+              <input type="text" class="form-control" id="numeroNF" placeholder="Ex: 12345" required>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Fornecedor</label>
+              <input type="text" class="form-control" id="fornecedorNF" placeholder="Nome do fornecedor">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Data de Emissão</label>
+              <input type="date" class="form-control" id="dataEmissao">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Valor Total (R$)</label>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input type="number" class="form-control" id="valorTotalNF"
+                  step="0.01" min="0" value="0.00" placeholder="0,00">
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Observações</label>
+              <textarea class="form-control" id="obsNF" rows="2"
+                placeholder="Observações adicionais sobre esta nota…"></textarea>
+            </div>
+          </div>
+
+          <hr style="border-color:var(--border)">
+
+          <!-- Itens da NF -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 style="font-family:var(--font-head);font-weight:700;color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin:0">
+              <i class="bi bi-list-ul me-1"></i>Itens da Nota Fiscal
+            </h6>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="adicionarItem()">
+              <i class="bi bi-plus-lg me-1"></i>Adicionar Item
+            </button>
+          </div>
+
+          <div id="containerItens">
+            <!-- itens renderizados dinamicamente -->
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" id="btnSalvarNF" onclick="salvarNF()">
+          <i class="bi bi-check-lg me-1"></i>Salvar Nota Fiscal
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= MODAL: VISUALIZAR NF ======= -->
+<div class="modal fade" id="modalVerNF" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Detalhes da Nota Fiscal</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Info grid -->
+        <div class="nf-info-grid mb-4">
+          <div class="nf-info-item">
+            <label>Número da NF</label>
+            <span id="viewNumeroNF" style="font-family:var(--font-mono);font-size:1rem;color:var(--accent)">–</span>
+          </div>
+          <div class="nf-info-item">
+            <label>Fornecedor</label>
+            <span id="viewFornecedor">–</span>
+          </div>
+          <div class="nf-info-item">
+            <label>Data de Emissão</label>
+            <span id="viewData">–</span>
+          </div>
+          <div class="nf-info-item">
+            <label>Valor Total</label>
+            <span id="viewValor" style="color:var(--success);font-size:1.1rem">–</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Observações</label>
+          <p id="viewObs" class="text-muted" style="font-size:.9rem;margin:0">–</p>
+        </div>
+
+        <hr style="border-color:var(--border)">
+        <h6 style="font-family:var(--font-head);font-weight:700;font-size:.85rem;margin-bottom:12px">
+          Itens desta Nota
+        </h6>
+
+        <table class="table" id="tblViewItens">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th class="text-center">Qtd</th>
+              <th>Preço Unit.</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/notas.js"></script>
+</body>
+</html>

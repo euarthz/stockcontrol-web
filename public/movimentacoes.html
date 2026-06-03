@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockControl – Movimentações</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ======= SIDEBAR ======= -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-brand" href="index.html">
+    <div class="sidebar-brand-icon"><i class="bi bi-box-seam-fill"></i></div>
+    <div class="sidebar-brand-text">
+      <span class="sidebar-brand-name">StockControl</span>
+      <span class="sidebar-brand-sub">Web System</span>
+    </div>
+  </a>
+  <div class="sidebar-section">Menu</div>
+  <nav>
+    <a class="nav-item" href="index.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+    <a class="nav-item" href="produtos.html"><i class="bi bi-box2-fill"></i><span>Produtos</span></a>
+    <a class="nav-item" href="notas.html"><i class="bi bi-receipt-cutoff"></i><span>Notas Fiscais</span></a>
+    <a class="nav-item active" href="movimentacoes.html"><i class="bi bi-arrow-left-right"></i><span>Movimentações</span></a>
+  </nav>
+  <div class="sidebar-footer">StockControl v1.0 &copy; 2025</div>
+</aside>
+
+<!-- ======= MAIN ======= -->
+<div class="main-content">
+
+  <header class="topbar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+    <span class="topbar-title"><i class="bi bi-arrow-left-right me-2 text-primary"></i>Movimentações de Estoque</span>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbarDate"></span>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <!-- Info cards de legenda -->
+    <div class="row g-3 mb-4 fade-in">
+      <div class="col-md-6">
+        <div class="d-flex align-items-center gap-3 p-3"
+          style="background:var(--success-light);border-radius:var(--radius);border-left:4px solid var(--success)">
+          <i class="bi bi-arrow-up-circle-fill fs-3" style="color:var(--success)"></i>
+          <div>
+            <div style="font-weight:700;color:#059669">Entrada</div>
+            <div style="font-size:.82rem;color:var(--text-muted)">Gerada automaticamente ao registrar uma Nota Fiscal</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex align-items-center gap-3 p-3"
+          style="background:var(--danger-light);border-radius:var(--radius);border-left:4px solid var(--danger)">
+          <i class="bi bi-arrow-down-circle-fill fs-3" style="color:var(--danger)"></i>
+          <div>
+            <div style="font-weight:700;color:#dc2626">Saída</div>
+            <div style="font-size:.82rem;color:var(--text-muted)">Registrada manualmente (venda, consumo, perda…)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-header fade-in-d1">
+      <div class="page-header-left">
+        <h2>Histórico de Movimentações</h2>
+        <p>Entradas e saídas de produtos do estoque</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="loadMovimentacoes()">
+          <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+        </button>
+        <button class="btn btn-danger" onclick="abrirModalSaida()">
+          <i class="bi bi-arrow-down-circle me-1"></i>Registrar Saída
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card-panel fade-in-d2">
+      <div class="card-panel-body">
+        <table class="table" id="tblMovs">
+          <thead>
+            <tr>
+              <th>Data / Hora</th>
+              <th>Produto</th>
+              <th>Tipo</th>
+              <th>Qtd Mov.</th>
+              <th>Antes</th>
+              <th>Depois</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="7" class="text-center py-4 text-muted">
+              <div class="spinner-border spinner-border-sm me-2"></div>Carregando…
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ======= MODAL: REGISTRAR SAÍDA ======= -->
+<div class="modal fade" id="modalSaida" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="background:#dc2626">
+        <h5 class="modal-title"><i class="bi bi-arrow-down-circle me-2"></i>Registrar Saída de Estoque</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="frmSaida" onsubmit="return false">
+
+          <div class="mb-3">
+            <label class="form-label">Produto *</label>
+            <select class="form-select" id="selProdutoSaida">
+              <option value="">— selecione um produto —</option>
+            </select>
+            <div id="infoEstoqueAtual" class="mt-1" style="font-size:.82rem"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Quantidade a Retirar *</label>
+            <div class="input-group">
+              <input type="number" class="form-control" id="qtdSaida" min="1" placeholder="0" required>
+              <span class="input-group-text">unidades</span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Motivo da Saída</label>
+            <select class="form-select" id="motivoSaida">
+              <option value="Venda">Venda</option>
+              <option value="Consumo interno">Consumo interno</option>
+              <option value="Perda / Avaria">Perda / Avaria</option>
+              <option value="Devolução">Devolução</option>
+              <option value="Ajuste de inventário">Ajuste de inventário</option>
+              <option value="Saída manual">Outro</option>
+            </select>
+          </div>
+
+          <div class="alert alert-warning d-flex gap-2 align-items-center"
+            style="border-radius:var(--radius-sm);font-size:.85rem">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Esta operação <strong>deduz</strong> do estoque atual. Verifique a quantidade antes de confirmar.</span>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" id="btnRegistrarSaida" onclick="registrarSaida()">
+          <i class="bi bi-arrow-down-circle me-1"></i>Registrar Saída
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/movimentacoes.js"></script>
+</body>
+</html>
