@@ -1,5 +1,7 @@
 StockControl Web
 
+> **Projeto acadêmico** desenvolvido em equipe na faculdade, sem uso comercial.
+
 Sistema de Gerenciamento de Estoque e Notas Fiscais  
 Tecnologias: Node.js · Express · SQLite3 · Bootstrap 5 · HTML · CSS · JavaScript
 
@@ -166,4 +168,10 @@ Mercados · Lojas de materiais de construção · Autopeças · Distribuidoras �
 Dados de Exemplo
 
 Colocamos o sistema já com 10 produtos de exemplo para demonstração. 
+
+---
+
+## Limitações conhecidas
+- Excluir uma nota fiscal não reverte o estoque.
+- O sistema não possui autenticação de usuários.
 
